@@ -1,9 +1,9 @@
-function! s:CMakeListsOpen()
+function! s:CMakeListsOpen(force)
   let fname = expand('%:p')
   if !filereadable(fname) | return | endif
 
   let listname = expand('%:p:h') . '/CMakeLists.txt'
-  if !filereadable(listname)
+  if !a:force && !filereadable(listname)
     echo 'CMakeLists file not found in current directory'
     return
   endif
@@ -11,4 +11,4 @@ function! s:CMakeListsOpen()
   execute 'edit' listname
 endfunction
 
-command! CMakeLists call <SID>CMakeListsOpen()
+command! -bang CMakeLists call <SID>CMakeListsOpen(<bang>0)
