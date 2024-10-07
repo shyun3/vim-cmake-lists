@@ -8,12 +8,13 @@ It is recommended to use a plugin manager to install, such as
 
 ## Usage
 **:CMakeLists**  
-Open the CMakeLists.txt file for the directory of the currently selected buffer.
+Open the CMakeLists.txt file for the directory of the currently selected
+buffer.
 
 **:CMakeLists _{directory}_**  
 Open the CMakeLists.txt file for the given _{directory}_. The directory may be
-given as an absolute or relative path. If relative, the directory will be interpreted
-relative the directory of the currently selected buffer.
+given as an absolute or relative path. If relative, the path will be
+interpreted relative to the directory of the currently selected buffer.
 
 **:CMakeLists! _[directory]_**  
 Edit the CMakeLists.txt file for the _[directory]_ always, similar to `:edit!`.
