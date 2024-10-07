@@ -1,35 +1,36 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Main functions
 
-function! s:CMakeListsOpen(force, dir)
-  if !s:IsDirValid(a:dir) | return | endif
-  if !a:force && !s:IsCMakeListsInDir(a:dir) | return | endif
+function! s:CMakeListsOpen(force, ...)
+  if a:0 > 1
+    echoerr 'Can only take 0 or 1 extra arguments'
+    return
+  endif
 
-  execute 'edit' s:AppendCMakeListsToDirName(a:dir)
-endfunction
+  " Check if current buffer is a valid file (e.g. not quickfix list, etc.)
+  let invalidDirMsg = 'Directory is not valid for CMakeLists files'
+  if !filereadable(expand('%:p'))
+    echo invalidDirMsg
+    return
+  endif
 
-function! s:CMakeListsCurr(force)
-  call s:CMakeListsOpen(a:force, expand('%:p:h'))
-endfunction
+  " Use current directory if directory argument was not passed
+  let dir = a:0 ? s:GetFullPath(a:1) : s:GetCurrFileDir()
+  if !isdirectory(dir)
+    echo invalidDirMsg
+    return
+  endif
 
-function! s:CMakeListsParent(force)
-  call s:CMakeListsOpen(a:force, expand('%:p:h:h'))
+  if a:force || s:IsCMakeListsInDir(dir)
+    execute 'edit' s:AppendCMakeListsToDir(dir)
+  endif
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Utilities
 
-function! s:IsDirValid(dir)
-  if !isdirectory(a:dir)
-    echo 'Directory is not valid for CMakeLists files'
-    return 0
-  endif
-
-  return 1
-endfunction
-
 function! s:IsCMakeListsInDir(dir)
-  let listname = s:AppendCMakeListsToDirName(a:dir)
+  let listname = s:AppendCMakeListsToDir(a:dir)
   if !filereadable(listname)
     echo 'CMakeLists file not found in directory'
     return 0
@@ -38,12 +39,31 @@ function! s:IsCMakeListsInDir(dir)
   return 1
 endfunction
 
-function! s:AppendCMakeListsToDirName(dir)
+function! s:AppendCMakeListsToDir(dir)
   return a:dir . '/CMakeLists.txt'
+endfunction
+
+" For relative directories, return the full directory path relative to the
+" current file directory. For absolute directories, return without
+" modifications. Return empty string if the argument is an invalid directory.
+function! s:GetFullPath(dir)
+  let fullPath = s:GetCurrFileDir() . '/' . a:dir
+  if !isdirectory(fullPath)
+    " Assume argument was absolute path
+    return isdirectory(a:dir) ? a:dir : ''
+  else
+    return fullPath
+  endif
+endfunction
+
+function! s:GetCurrFileDir()
+  return expand('%:p:h')
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " User Ex commands
 
-command! -bang CMakeLists call <SID>CMakeListsCurr(<bang>0)
-command! -bang CMakeListsUp call <SID>CMakeListsParent(<bang>0)
+command! -bang -nargs=? -complete=dir CMakeLists
+  \ call <SID>CMakeListsOpen(<bang>0, <f-args>)
+command! -bang -complete=dir CMakeListsUp
+  \ call <SID>CMakeListsOpen(<bang>0, '..')
