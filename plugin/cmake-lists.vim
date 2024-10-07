@@ -65,7 +65,5 @@ endfunction
 
 command! -bang -nargs=? -complete=dir CMakeLists
   \ call <SID>CMakeListsOpen(<bang>0, <f-args>)
-command! -bang -complete=dir CMakeListsUp
-  \ call <SID>CMakeListsOpen(<bang>0, '..')
 
 autocmd FileType cmake nmap <buffer> gf :CMakeLists <cfile><CR>
