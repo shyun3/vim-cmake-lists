@@ -1,0 +1,20 @@
+*cmake-lists.txt*   Functionality for navigating CMakeLists.txt files
+
+Author: Mo Hyun <https://github.com/shyun3>
+
+===============================================================================
+USAGE                                                           *cmake-lists*
+
+                                                 *:CMakeLists* *:CMakeLists!*
+:CMakeLists[!] [directory]
+  If no argument is given, open the CMakeLists.txt file of the currently
+  selected buffer's directory. Any given directory may be an absolute or a
+  relative path. Note that relative paths will be interpreted relative to the
+  currently selected buffer's directory, not the current working directory.
+
+  Providing a ! will always edit a CMakeLists.txt file for the given directory,
+  assuming that the currently selected buffer's directory is valid.
+
+gf
+  Open the CMakeLists.txt file for the directory under or after the cursor.
+  Directories may be either absolute or relative.
